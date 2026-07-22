@@ -1,7 +1,7 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from database import db
-from models import Admin
+from models import Admin, Product
 
 app = Flask(__name__)
 
@@ -18,6 +18,10 @@ db.init_app(app)
 @app.route("/")
 def home():
     return render_template("index.html")
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -54,6 +58,34 @@ with app.app_context():
 
         db.session.add(admin)
         db.session.commit()
+
+
+@app.route("/products")
+def products():
+    all_products = Product.query.all()
+    return render_template(
+        "products/product_list.html",
+        products=all_products
+    )
+
+@app.route("/products/add", methods=["GET", "POST"])
+def add_product():
+
+    if request.method == "POST":
+
+        product = Product(
+            name=request.form["name"],
+            category=request.form["category"],
+            price=float(request.form["price"]),
+            stock=int(request.form["stock"])
+        )
+
+        db.session.add(product)
+        db.session.commit()
+
+        return redirect("/products")
+
+    return render_template("products/add_product.html")
 
 
 if __name__ == "__main__":
