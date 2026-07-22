@@ -109,6 +109,16 @@ def edit_product(id):
         product=product
     )
 
+@app.route("/products/delete/<int:id>")
+def delete_product(id):
+
+    product = Product.query.get_or_404(id)
+
+    db.session.delete(product)
+    db.session.commit()
+
+    return redirect("/products")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
