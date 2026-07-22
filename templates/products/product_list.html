@@ -72,6 +72,7 @@ Add Product
     <th>Category</th>
     <th>Price</th>
     <th>Stock</th>
+    <th>Action</th>
 </tr>
 
 {% for product in products %}
@@ -83,6 +84,16 @@ Add Product
 <td>{{ product.category }}</td>
 <td>{{ product.price }}</td>
 <td>{{ product.stock }}</td>
+
+<td>
+
+<a href="/products/edit/{{ product.id }}">
+
+Edit
+
+</a>
+
+</td>
 
 </tr>
 

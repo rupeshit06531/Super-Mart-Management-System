@@ -88,5 +88,27 @@ def add_product():
     return render_template("products/add_product.html")
 
 
+@app.route("/products/edit/<int:id>", methods=["GET", "POST"])
+def edit_product(id):
+
+    product = Product.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        product.name = request.form["name"]
+        product.category = request.form["category"]
+        product.price = float(request.form["price"])
+        product.stock = int(request.form["stock"])
+
+        db.session.commit()
+
+        return redirect("/products")
+
+    return render_template(
+        "products/edit_product.html",
+        product=product
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
