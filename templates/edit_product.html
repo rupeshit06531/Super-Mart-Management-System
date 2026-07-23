@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+<!--
+==========================================================
+Edit Product Page
+
+Purpose:
+This page allows the administrator to update
+the selected product information.
+==========================================================
+-->
+
+{% block title %}
+Edit Product | Super Mart Management System
+{% endblock %}
+
+{% block content %}
+
+<!-- Display the page heading -->
+<h1 class="page-title">
+    Edit Product
+</h1>
+
+<!-- Display the edit product form -->
+<div class="card">
+
+    <form action="/edit-product/{{ product.id }}" method="POST">
+
+        <!-- Update the product name -->
+        <div class="form-group">
+
+            <label>Product Name</label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                value="{{ product.name }}"
+                required>
+
+        </div>
+
+        <!-- Update the product category -->
+        <div class="form-group">
+
+            <label>Category</label>
+
+            <input
+                type="text"
+                name="category"
+                class="form-control"
+                value="{{ product.category }}"
+                required>
+
+        </div>
+
+        <!-- Update the product price -->
+        <div class="form-group">
+
+            <label>Price</label>
+
+            <input
+                type="number"
+                name="price"
+                class="form-control"
+                value="{{ product.price }}"
+                step="0.01"
+                min="0"
+                required>
+
+        </div>
+
+        <!-- Update the available stock -->
+        <div class="form-group">
+
+            <label>Stock Quantity</label>
+
+            <input
+                type="number"
+                name="stock"
+                class="form-control"
+                value="{{ product.stock }}"
+                min="0"
+                required>
+
+        </div>
+
+        <!-- Display form action buttons -->
+        <div class="form-buttons">
+
+            <!-- Save the updated product -->
+            <button type="submit" class="btn">
+
+                Update Product
+
+            </button>
+
+            <!-- Return to the Products page -->
+            <a href="/products" class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

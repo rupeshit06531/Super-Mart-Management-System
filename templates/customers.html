@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+<!--
+==========================================================
+Customer List Page
+
+Purpose:
+Display all customers and provide access
+to customer management operations.
+==========================================================
+-->
+
+{% block title %}
+Customers | Super Mart Management System
+{% endblock %}
+
+{% block content %}
+
+<h1 class="page-title">
+    Customer Management
+</h1>
+
+<div class="card">
+
+    <div style="margin-bottom:20px;">
+
+        <!-- Open Add Customer page -->
+        <a href="/add-customer" class="btn">
+
+            Add Customer
+
+        </a>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Action</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if customers %}
+
+            {% for customer in customers %}
+
+            <tr>
+
+                <td>{{ customer.id }}</td>
+
+                <td>{{ customer.name }}</td>
+
+                <td>{{ customer.mobile }}</td>
+
+                <td>{{ customer.email }}</td>
+
+                <td>{{ customer.address }}</td>
+
+                <td>
+
+                    Coming Soon
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="6">
+
+                    No customers found.
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

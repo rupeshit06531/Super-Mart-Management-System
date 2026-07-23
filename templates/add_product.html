@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+<!--
+==========================================================
+Add Product Page
+
+Purpose:
+This page allows the administrator to enter
+new product information and save it into
+the database.
+==========================================================
+-->
+
+{% block title %}
+Add Product | Super Mart Management System
+{% endblock %}
+
+{% block content %}
+
+<!-- Display the page heading -->
+<h1 class="page-title">
+    Add Product
+</h1>
+
+<!-- Display the product form -->
+<div class="card">
+
+    <form action="/add-product" method="POST">
+
+        <!-- Enter the product name -->
+        <div class="form-group">
+
+            <label>
+                Product Name
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Enter product name"
+                required>
+
+        </div>
+
+        <br>
+
+        <!-- Enter the product category -->
+        <div class="form-group">
+
+            <label>
+                Category
+            </label>
+
+            <input
+                type="text"
+                name="category"
+                class="form-control"
+                placeholder="Enter category"
+                required>
+
+        </div>
+
+        <br>
+
+        <!-- Enter the product price -->
+        <div class="form-group">
+
+            <label>
+                Price
+            </label>
+
+            <input
+                type="number"
+                name="price"
+                class="form-control"
+                placeholder="Enter price"
+                min="0"
+                step="0.01"
+                required>
+
+        </div>
+
+        <br>
+
+        <!-- Enter the available stock -->
+        <div class="form-group">
+
+            <label>
+                Stock Quantity
+            </label>
+
+            <input
+                type="number"
+                name="stock"
+                class="form-control"
+                placeholder="Enter stock quantity"
+                min="0"
+                required>
+
+        </div>
+
+        <br>
+
+        <!-- Display form action buttons -->
+        <div class="form-buttons">
+
+            <!-- Save the product information -->
+            <button type="submit" class="btn">
+
+                Save Product
+
+            </button>
+
+            <!-- Return to the Products page -->
+            <a href="/products" class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

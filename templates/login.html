@@ -1,103 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
+    <!-- Define the character encoding -->
     <meta charset="UTF-8">
+
+    <!-- Make the page responsive on all devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Mart Login</title>
 
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
-        }
-
-        body{
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            background:linear-gradient(135deg,#4e73df,#224abe);
-        }
-
-        .login-box{
-            width:380px;
-            background:white;
-            padding:35px;
-            border-radius:15px;
-            box-shadow:0 10px 25px rgba(0,0,0,.2);
-        }
-
-        h2{
-            text-align:center;
-            margin-bottom:25px;
-            color:#333;
-        }
-
-        input{
-            width:100%;
-            padding:12px;
-            margin:10px 0;
-            border:1px solid #ccc;
-            border-radius:8px;
-            font-size:15px;
-        }
-
-        button{
-            width:100%;
-            padding:12px;
-            background:#4e73df;
-            color:white;
-            border:none;
-            border-radius:8px;
-            font-size:16px;
-            cursor:pointer;
-        }
-
-        button:hover{
-            background:#224abe;
-        }
-
-        p{
-            text-align:center;
-            margin-top:15px;
-            color:#666;
-            font-size:14px;
-        }
-    </style>
+    <!-- Display the page title in the browser -->
+    <title>Admin Login | Super Mart Management System</title>
 
 </head>
 
 <body>
 
-<div class="login-box">
+    <!-- Display the application title -->
+    <h1>Super Mart Management System</h1>
 
-<h2>Super Mart Login</h2>
+    <!-- Display the login form -->
+    <form method="POST">
 
-<form method="POST">
+        <!-- Allow the administrator to enter a username -->
+        <label>Username</label><br>
+        <input
+            type="text"
+            name="username"
+            placeholder="Enter Username"
+            required
+        >
 
-<input
-type="text"
-name="username"
-placeholder="Username"
-required>
+        <br><br>
 
-<input
-type="password"
-name="password"
-placeholder="Password"
-required>
+        <!-- Allow the administrator to enter a password -->
+        <label>Password</label><br>
+        <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            required
+        >
 
-<button type="submit">
-Login
-</button>
+        <br><br>
 
-</form>
+        <!-- Submit the login form -->
+        <button type="submit">
+            Login
+        </button>
 
-<p>Super Mart Management System</p>
-
-</div>
+    </form>
 
 </body>
+
 </html>

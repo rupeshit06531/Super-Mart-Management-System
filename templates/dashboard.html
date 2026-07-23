@@ -1,163 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Mart Dashboard</title>
+{% extends "base.html" %}
+
+<!--
+==========================================================
+Dashboard Page
+
+Purpose:
+This page displays the administrator dashboard.
+It provides quick access to all major modules
+of the Super Mart Management System.
+===========================================================
+-->
+
+{% block title %}
+Dashboard | Super Mart Management System
+{% endblock %}
+
+{% block styles %}
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,Helvetica,sans-serif;
+/* Display the page heading */
+.page-title{
+    margin-bottom:25px;
 }
 
-body{
-display:flex;
-background:#f4f6f9;
+/* Display dashboard cards */
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
 }
 
-/* Sidebar */
-
-.sidebar{
-width:240px;
-height:100vh;
-background:#1f2937;
-color:white;
-position:fixed;
-}
-
-.sidebar h2{
-text-align:center;
-padding:20px;
-background:#111827;
-}
-
-.sidebar ul{
-list-style:none;
-}
-
-.sidebar ul li{
-padding:18px;
-border-bottom:1px solid #374151;
-cursor:pointer;
-}
-
-.sidebar ul li:hover{
-background:#2563eb;
-}
-
-/* Main */
-
-.main{
-margin-left:240px;
-width:100%;
-}
-
-.header{
-background:#2563eb;
-color:white;
-padding:20px;
-font-size:25px;
-font-weight:bold;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:20px;
-padding:30px;
-}
-
+/* Style each dashboard card */
 .card{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,.1);
-text-align:center;
+    background:white;
+    border-radius:10px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.10);
+    transition:.3s;
 }
 
+/* Add a hover effect */
+.card:hover{
+    transform:translateY(-5px);
+}
+
+/* Display icons */
+.card i{
+    font-size:40px;
+    color:#2c3e50;
+    margin-bottom:15px;
+}
+
+/* Display card title */
 .card h3{
-margin-bottom:10px;
+    margin-bottom:10px;
 }
 
-.card p{
-font-size:35px;
-color:#2563eb;
-font-weight:bold;
+/* Style the action button */
+.card a{
+    display:inline-block;
+    margin-top:15px;
+    padding:10px 18px;
+    text-decoration:none;
+    background:#2c3e50;
+    color:white;
+    border-radius:5px;
 }
 
 </style>
 
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
 
-<div class="sidebar">
+<!-- Display the dashboard heading -->
+<h1 class="page-title">
+    Dashboard
+</h1>
 
-<h2>SMMS</h2>
+<!-- Display all available modules -->
+<div class="dashboard-grid">
 
-<ul>
+    <!-- Product Management -->
+    <div class="card">
 
-<li>🏠 Dashboard</li>
+        <i class="fa-solid fa-box"></i>
 
-<li><a href="/products" style="color:white;text-decoration:none;">📦 Products</a></li>
+        <h3>Products</h3>
 
-<li>📂 Categories</li>
+        <p>
+            Add, update and manage products.
+        </p>
 
-<li>🛒 Sales</li>
+        <a href="/products">
+            Open Module
+        </a>
 
-<li>👥 Customers</li>
+    </div>
 
-<li>🧾 Billing</li>
+    <!-- Customer Management -->
+    <div class="card">
 
-<li>📈 Reports</li>
+        <i class="fa-solid fa-users"></i>
 
-<li>👤 Users</li>
+        <h3>Customers</h3>
 
-<li>⚙ Settings</li>
+        <p>
+            Manage customer information.
+        </p>
 
-<li>🚪 Logout</li>
+        <a href="/customers">
+            Open Module
+        </a>
 
-</ul>
+    </div>
+
+    <!-- Billing -->
+    <div class="card">
+
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+        <h3>Billing</h3>
+
+        <p>
+            Generate customer bills.
+        </p>
+
+        <a href="/billing">
+            Open Module
+        </a>
+
+    </div>
+
+    <!-- Reports -->
+    <div class="card">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <h3>Reports</h3>
+
+        <p>
+            View business reports.
+        </p>
+
+        <a href="/reports">
+            Open Module
+        </a>
+
+    </div>
 
 </div>
 
-<div class="main">
-
-<div class="header">
-
-Welcome Admin
-
-</div>
-
-<div class="cards">
-
-<div class="card">
-<h3>Total Products</h3>
-<p>0</p>
-</div>
-
-<div class="card">
-<h3>Total Categories</h3>
-<p>0</p>
-</div>
-
-<div class="card">
-<h3>Total Customers</h3>
-<p>0</p>
-</div>
-
-<div class="card">
-<h3>Total Sales</h3>
-<p>0</p>
-</div>
-
-</div>
-
-</div>
-
-</body>
-</html>
+{% endblock %}

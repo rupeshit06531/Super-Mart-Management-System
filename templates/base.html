@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Define the character encoding -->
+    <meta charset="UTF-8">
+
+    <!-- Make the application responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Display the page title -->
+    <title>{% block title %}Super Mart Management System{% endblock %}</title>
+
+    <!-- Load Font Awesome icons -->
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Load the common stylesheet used by the entire application -->
+        <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Common styles used across the application -->
+    
+
+    {% block styles %}
+    {% endblock %}
+
+    
+</head>
+
+<body>
+
+    <!-- Display the application navigation bar -->
+    <div class="navbar">
+
+        <div class="logo">
+            <i class="fa-solid fa-store"></i>
+            Super Mart
+        </div>
+
+        <div>
+
+            <a href="/dashboard">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </a>
+
+            <a href="/logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Display page specific content -->
+    <div class="container">
+
+        <!-- =======================================================
+        Display Flash Messages
+
+        Purpose:
+        This section displays success, error, warning,
+        and information messages to the administrator.
+        ======================================================= -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+
+</html>
