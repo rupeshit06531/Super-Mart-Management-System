@@ -33,29 +33,41 @@ class Admin(db.Model):
         """
         return f"<Admin {self.username}>"
 
+from datetime import datetime
 
 class Product(db.Model):
-    """
-    Store product information.
-
-    This model keeps all product details such as
-    product name, category, price, and available stock.
-    """
-
-    __tablename__ = "products"
-
+    # Primary key for uniquely identifying each product
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
+
+    # Stores the product name
+    name = db.Column(db.String(100), nullable=False)
+
+    # Stores the product category
     category = db.Column(db.String(100), nullable=False)
+
+    # Stores the selling price of the product
     price = db.Column(db.Float, nullable=False)
+
+    # Stores the available stock quantity
     stock = db.Column(db.Integer, nullable=False)
 
-    def __repr__(self):
-        """
-        Return a readable representation of the product.
-        """
-        return f"<Product {self.name}>"
-    
+    # Stores the product image file name
+    image = db.Column(db.String(255), nullable=True)
+
+    # Stores the date and time when the product is created
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    # Automatically updates the date and time whenever the product is modified
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+
 # ==========================================================
 # Customer Model
 # This model stores customer information used
@@ -101,3 +113,46 @@ class Customer(db.Model):
         Display customer information.
         """
         return f"<Customer {self.name}>"
+    
+class Invoice(db.Model):
+    """
+    Store invoice information.
+    """
+
+    # Primary Key
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    # Invoice Number
+    bill_number = db.Column(
+        db.String(50),
+        unique=True,
+        nullable=False
+    )
+
+    # Customer Name
+    customer_name = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    # Grand Total
+    total_amount = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    # Invoice Creation Date
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    def __repr__(self):
+        """
+        Return invoice information.
+        """
+
+        return f"<Invoice {self.bill_number}>"

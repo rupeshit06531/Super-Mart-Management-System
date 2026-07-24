@@ -75,10 +75,34 @@ Dashboard | Super Mart Management System
 
 {% block content %}
 
+<div class="dashboard-cards">
+
 <!-- Display the dashboard heading -->
 <h1 class="page-title">
     Dashboard
 </h1>
+
+<!-- Welcome Message -->
+<p>
+
+    Welcome to the Super Mart Management System Dashboard.
+
+</p>
+
+<br>
+
+<!-- Logout Button -->
+<div style="margin-bottom:20px;">
+
+    <a href="/logout">
+
+        <button>
+            Logout
+        </button>
+
+    </a>
+
+</div>
 
 <!-- Display all available modules -->
 <div class="dashboard-grid">
@@ -88,10 +112,13 @@ Dashboard | Super Mart Management System
 
         <i class="fa-solid fa-box"></i>
 
-        <h3>Products</h3>
+        <h3>📦 Products</h3>
 
         <p>
-            Add, update and manage products.
+
+            Total Products :
+            <strong>{{ total_products }}</strong>
+
         </p>
 
         <a href="/products">
@@ -105,10 +132,13 @@ Dashboard | Super Mart Management System
 
         <i class="fa-solid fa-users"></i>
 
-        <h3>Customers</h3>
+        <h3>👥 Customers</h3>
 
         <p>
-            Manage customer information.
+
+            Total Customers :
+            <strong>{{ total_customers }}</strong>
+
         </p>
 
         <a href="/customers">
@@ -122,7 +152,7 @@ Dashboard | Super Mart Management System
 
         <i class="fa-solid fa-file-invoice-dollar"></i>
 
-        <h3>Billing</h3>
+        <h3>🧾 Billing</h3>
 
         <p>
             Generate customer bills.
@@ -134,12 +164,59 @@ Dashboard | Super Mart Management System
 
     </div>
 
+    <!-- Stock Summary -->
+    <div class="card">
+
+        <i class="fa-solid fa-warehouse"></i>
+
+        <h3>Total Stock</h3>
+
+        <p>
+
+            Available Stock :
+            <strong>{{ total_stock }}</strong>
+
+        </p>
+
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div class="card">
+
+        <i class="fa-solid fa-triangle-exclamation"></i>
+
+        <h3>Low Stock</h3>
+
+        <p>
+
+            Low Stock Products :
+            <strong>{{ low_stock }}</strong>
+            <!-- Low Stock Status -->
+
+            {% if low_stock > 0 %}
+
+            <p style="color:red;">
+                Warning: Low Stock Available
+            </p>
+
+            {% else %}
+
+            <p style="color:green;">
+                All Products In Stock
+            </p>
+
+            {% endif %}
+
+        </p>
+
+    </div>
+
     <!-- Reports -->
     <div class="card">
 
         <i class="fa-solid fa-chart-line"></i>
 
-        <h3>Reports</h3>
+        <h3>📊 Reports</h3>
 
         <p>
             View business reports.
@@ -151,6 +228,100 @@ Dashboard | Super Mart Management System
 
     </div>
 
+    <div class="card">
+
+        <h3>🧾 Invoices</h3>
+
+        <h2>{{ total_invoices }}</h2>
+
+    </div>
+
+    <!-- Invoice History Button -->
+
+    <a href="{{ url_for('invoice_history') }}">
+
+        <button>
+
+            View Invoice History
+
+        </button>
+
+    </a>
+
+
+
 </div>
+
+<br>
+
+<h2>Recent Products</h2>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Stock</th>
+    </tr>
+
+    {% for product in recent_products %}
+
+    <tr>
+
+        <td>{{ product.name }}</td>
+
+        <td>{{ product.category }}</td>
+
+        <td>{{ product.stock }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<hr>
+
+<!-- Sales Report Button -->
+
+<a href="{{ url_for('sales_report') }}">
+
+    <button>
+
+        Open Sales Report
+
+    </button>
+
+</a>
+
+<br><br>
+
+<h3>Recent Invoices</h3>
+
+</div>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Bill No</th>
+        <th>Customer</th>
+        <th>Total</th>
+    </tr>
+
+    {% for invoice in recent_invoices %}
+
+    <tr>
+
+        <td>{{ invoice.bill_number }}</td>
+
+        <td>{{ invoice.customer_name }}</td>
+
+        <td>₹{{ invoice.total_amount }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
 
 {% endblock %}

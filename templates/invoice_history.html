@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+Invoice History
+{% endblock %}
+
+{% block content %}
+
+<h2>Invoice History</h2>
+
+<!-- Search Form -->
+
+<form method="GET">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search Bill Number"
+        value="{{ search }}"
+    >
+
+    <button type="submit">
+
+        Search
+
+    </button>
+
+</form>
+
+<br>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Bill No</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Date</th>
+        <th>View</th>
+        <th>Delete</th>
+    </tr>
+
+    {% for invoice in invoices %}
+
+    <tr>
+
+        <td>{{ invoice.bill_number }}</td>
+
+        <td>{{ invoice.customer_name }}</td>
+
+        <td>₹{{ invoice.total_amount }}</td>
+
+        <td>{{ invoice.created_at }}</td>
+
+        <td>
+
+            <a href="{{ url_for('view_invoice', id=invoice.id) }}">
+
+                View
+
+            </a>
+
+        </td>
+
+        <td>
+
+            <a href="{{ url_for('delete_invoice', id=invoice.id) }}"
+            onclick="return confirm('Delete this invoice?')">
+
+                Delete
+
+            </a>
+
+        </td>
+
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

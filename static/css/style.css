@@ -404,3 +404,172 @@ such as deleting records from the database.
     background:#c0392b;
 
 }
+
+/* Dashboard Cards */
+
+.dashboard-cards{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-top:20px;
+}
+
+.card{
+    background:#ffffff;
+    border-radius:10px;
+    padding:20px;
+    width:220px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card h2{
+    color:#0d6efd;
+}
+
+/* Active Navigation Link */
+
+.active-menu{
+
+    background-color:#0d6efd;
+
+    color:white !important;
+
+    padding:10px;
+
+    border-radius:6px;
+
+    text-decoration:none;
+
+}
+
+/* Professional Navbar */
+
+.navbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px 30px;
+
+    background:#0d6efd;
+
+}
+
+.navbar a{
+
+    color:white;
+
+    text-decoration:none;
+
+    margin-left:15px;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.navbar a:hover{
+
+    color:#ffd43b;
+
+}
+
+.logo{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:white;
+
+}
+
+/* Page Container */
+
+.container{
+
+    width:90%;
+
+    margin:auto;
+
+    margin-top:30px;
+
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+
+    .navbar{
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+    }
+
+    .dashboard-cards{
+
+        flex-direction: column;
+
+    }
+
+    .card{
+
+        width:100%;
+
+    }
+
+    table{
+
+        width:100%;
+
+        display:block;
+
+        overflow-x:auto;
+
+    }
+
+    button{
+
+        width:100%;
+
+    }
+
+    input,
+    select{
+
+        width:100%;
+
+        margin-bottom:10px;
+
+    }
+
+}
+
+/* Footer */
+
+.footer{
+
+    margin-top:40px;
+
+    padding:15px;
+
+    background:#0d6efd;
+
+    color:white;
+
+    text-align:center;
+
+}

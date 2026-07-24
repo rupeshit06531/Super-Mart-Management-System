@@ -1,107 +1,90 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
 
-<!--
-==========================================================
-Products Page
+<head>
+    <title>Products</title>
+</head>
 
-Purpose:
-This page displays all available products.
-The administrator can add, edit, search,
-and delete products from this page.
-==========================================================
--->
+<body>
 
-{% block title %}
-Products | Super Mart Management System
-{% endblock %}
+    <h2>Product List</h2>
 
-{% block content %}
+    <!-- Display total number of products -->
+    <h4>Total Products : {{ total_products }}</h4>
 
-<!-- Display the page heading -->
-<h1 class="page-title">
-    Product Management
-</h1>
-
-<!-- Display the top action bar -->
-<div class="action-bar">
-
-    <!-- Navigate to the Add Product page -->
-    <a href="/add-product" class="btn">
-        Add Product
-    </a>
-
-</div>
-
-<br>
-
-<!-- Display the product table -->
-<table class="product-table">
-
-    <thead>
+    <table border="1" cellpadding="8">
 
         <tr>
-
             <th>ID</th>
-
-            <th>Product Name</th>
-
+            <th>Name</th>
             <th>Category</th>
-
             <th>Price</th>
-
             <th>Stock</th>
-
+            <!-- Product Image Column -->
+            <th>Image</th>
             <th>Action</th>
-
         </tr>
 
-    </thead>
-
-    <tbody>
-
-        <!-- Display every product received from the database -->
+        <!-- Display all products -->
         {% for product in products %}
 
         <tr>
 
+            <!-- Display product id -->
             <td>{{ product.id }}</td>
 
+            <!-- Display product name -->
             <td>{{ product.name }}</td>
 
+            <!-- Display product category -->
             <td>{{ product.category }}</td>
 
-            <td>₹ {{ product.price }}</td>
+            <!-- Display product price -->
+            <td>{{ product.price }}</td>
 
+            <!-- Display product stock -->
             <td>{{ product.stock }}</td>
 
+            <!-- Display Product Image -->
             <td>
 
-                <!-- Navigate to the Edit Product page -->
-                <a href="/edit-product/{{ product.id }}" class="btn">
-                    Edit
-                </a>
+                {% if product.image %}
 
-                <!-- Delete the selected product after confirmation -->
-                <a href="/delete-product/{{ product.id }}"
-                class="btn btn-danger"
-                onclick="return confirm('Are you sure you want to delete this product?')">
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + product.image) }}"
+                        width="80"
+                        height="80"
+                        alt="Product Image"
+                    >
 
-                    Delete
+                {% else %}
 
-                </a>
+                    No Image
+
+                {% endif %}
 
             </td>
 
-        </tr>
 
-        {% else %}
+            <!-- Display action buttons -->
+            <td>
 
-        <!-- Display a message when no products are available -->
-        <tr>
+                <a href="/product/{{ product.id }}">
+                    View
+                </a>
 
-            <td colspan="6">
+                |
 
-                No products found.
+                <a href="/edit-product/{{ product.id }}">
+                    Edit
+                </a>
+
+                |
+
+                <a href="/delete-product/{{ product.id }}"
+                   onclick="return confirm('Are you sure you want to delete this product?')">
+                    Delete
+                </a>
 
             </td>
 
@@ -109,8 +92,8 @@ Products | Super Mart Management System
 
         {% endfor %}
 
-    </tbody>
+    </table>
 
-</table>
+</body>
 
-{% endblock %}
+</html>

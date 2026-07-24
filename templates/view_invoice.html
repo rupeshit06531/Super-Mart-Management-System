@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}
+Invoice Details
+{% endblock %}
+
+{% block content %}
+
+<h2>Invoice Details</h2>
+
+<p><strong>Bill No:</strong> {{ invoice.bill_number }}</p>
+
+<p><strong>Customer:</strong> {{ invoice.customer_name }}</p>
+
+<p><strong>Total Amount:</strong> ₹{{ invoice.total_amount }}</p>
+
+<p><strong>Date:</strong> {{ invoice.created_at }}</p>
+
+<a href="{{ url_for('invoice_history') }}">
+    Back
+</a>
+
+<br><br>
+
+<a href="{{ url_for('invoice_pdf', id=invoice.id) }}">
+
+    <button>
+
+        Download PDF
+
+    </button>
+
+</a>
+
+{% endblock %}

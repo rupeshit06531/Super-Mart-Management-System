@@ -6,20 +6,22 @@ manage user requests, connect to the database,
 and work with database models.
 """
 
-from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    session,
-)
-
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Response
 from database import db
 
+# Used to generate a secure file name
+from werkzeug.utils import secure_filename
+
+# Used to work with folders and file paths
+import os
+
 # Import the required database models.
-from models import Admin, Product, Customer
+from models import (
+    Admin,
+    Product,
+    Customer,
+    Invoice
+)
 
 
 # ==========================================================
@@ -48,6 +50,9 @@ app.config["SECRET_KEY"] = "supermart_secret_key_2026"
 # Configure the folder used to store uploaded product images.
 # This folder will be created later in the project.
 app.config["UPLOAD_FOLDER"] = "static/uploads"
+
+# Create upload folder if it does not exist
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
 # ==========================================================
@@ -220,24 +225,75 @@ def login():
 def dashboard():
     """
     Display the administrator dashboard.
-
-    This function checks whether the administrator
-    is logged in before allowing access to the dashboard.
     """
 
-    # Check whether the administrator is logged in.
+    # Check whether the administrator is logged in
     if "admin_id" not in session:
 
-        # Display an error message for unauthorized access.
+        # Show warning message
         flash("Please login first.", "warning")
 
-        # Redirect the user to the login page.
+        # Redirect to login page
         return redirect(url_for("login"))
 
-# Display the professional dashboard page.
-# The dashboard interface is loaded from the HTML template.
-        return render_template("dashboard.html")
+    # Count total products
+    total_products = Product.query.count()
+
+    # Count total customers
+    total_customers = Customer.query.count()
+
+    # Count total invoices
+    total_invoices = Invoice.query.count()
+
+    # Get latest 5 invoices
+    recent_invoices = Invoice.query.order_by(
+        Invoice.created_at.desc()
+    ).limit(5).all()
+
+    # Calculate total stock of all products
+    total_stock = db.session.query(
+        db.func.sum(Product.stock)
+    ).scalar() or 0
+
+    # Count products with stock less than or equal to 5
+    low_stock = Product.query.filter(
+        Product.stock <= 5
+    ).count()
+
+    # Get the latest 5 products
+    recent_products = Product.query.order_by(
+        Product.id.desc()
+    ).limit(5).all()
+
+    # Open dashboard page
+    return render_template(
+    "dashboard.html",
+    total_products=total_products,
+    total_customers=total_customers,
+    total_stock=total_stock,
+    low_stock=low_stock,
+    recent_products=recent_products,
+    total_invoices=total_invoices,
+    recent_invoices=recent_invoices
     
+    )
+
+
+@app.route("/logout")
+def logout():
+    """
+    Logout the administrator.
+    """
+
+    # Remove all session data
+    session.clear()
+
+    # Show success message
+    flash("Logout successful.", "success")
+
+    # Redirect to login page
+    return redirect(url_for("login"))
+
 
 # ==========================================================
 # Product Management Module
@@ -315,17 +371,43 @@ def add_product():
 
             return render_template("add_product.html")
 
-        # Create a new product object.
+        # Read uploaded image
+        image = request.files.get("image")
+
+        # Default image name
+        image_name = None
+
+        # Check whether an image is uploaded
+        if image and image.filename != "":
+
+            # Generate a secure file name
+            image_name = secure_filename(image.filename)
+
+            # Save image into upload folder
+            image.save(
+                os.path.join(
+                    app.config["UPLOAD_FOLDER"],
+                    image_name
+                )
+            )
+
+        # Create a new product object
         new_product = Product(
 
+            # Store product name
             name=name,
 
+            # Store product category
             category=category,
 
+            # Store product price
             price=price,
 
-            stock=stock
+            # Store available stock
+            stock=stock,
 
+            # Store uploaded image name
+            image=image_name
         )
 
         # Save the product into the database.
@@ -352,118 +434,63 @@ def add_product():
 @app.route("/edit-product/<int:id>", methods=["GET", "POST"])
 def edit_product(id):
     """
-    Display the Edit Product page and update
-    the selected product information.
+    Display the Edit Product page and update product information.
     """
 
-    # Check whether the administrator is logged in.
+    # Check whether the administrator is logged in
     if "admin_id" not in session:
-
-        # Redirect unauthorized users to the login page.
         flash("Please login first.", "warning")
         return redirect(url_for("login"))
 
-    # Retrieve the selected product from the database.
+    # Retrieve the selected product
     product = Product.query.get_or_404(id)
 
-    # Check whether the form has been submitted.
+    # Check whether the form has been submitted
     if request.method == "POST":
 
-    # Check whether the form has been submitted.
-        if request.method == "POST":
+        # Read updated values from the form
+        name = request.form.get("name").strip()
+        category = request.form.get("category").strip()
+        price = float(request.form.get("price"))
+        stock = int(request.form.get("stock"))
 
-            # Read the updated product information.
-            name = request.form.get("name").strip()
-            category = request.form.get("category").strip()
-            price = float(request.form.get("price"))
-            stock = int(request.form.get("stock"))
+        # Check whether another product already has the same name
+        existing_product = Product.query.filter(
+            Product.name == name,
+            Product.id != product.id
+        ).first()
 
-            # Check whether another product already uses this name.
-            existing_product = Product.query.filter(
-                Product.name == name,
-                Product.id != product.id
-            ).first()
+        if existing_product:
+            flash("Product name already exists.", "danger")
+            return render_template("edit_product.html", product=product)
 
-            if existing_product:
+        # Validate product price
+        if price <= 0:
+            flash("Price must be greater than zero.", "danger")
+            return render_template("edit_product.html", product=product)
 
-                # Display an error message.
-                flash("Product name already exists.", "danger")
+        # Validate product stock
+        if stock < 0:
+            flash("Stock cannot be negative.", "danger")
+            return render_template("edit_product.html", product=product)
 
-                # Reload the Edit Product page.
-                return render_template(
-                    "edit_product.html",
-                    product=product
-                )
+        # Update product information
+        product.name = name
+        product.category = category
+        product.price = price
+        product.stock = stock
 
-            # Check whether the price is valid.
-            if price <= 0:
+        # Save changes into the database
+        db.session.commit()
 
-                flash("Price must be greater than zero.", "danger")
+        # Display success message
+        flash("Product updated successfully.", "success")
 
-                return render_template(
-                    "edit_product.html",
-                    product=product
-                )
+        # Redirect to product list page
+        return redirect(url_for("products"))
 
-            # Check whether the stock is valid.
-            if stock < 0:
-
-                flash("Stock cannot be negative.", "danger")
-
-                return render_template(
-                    "edit_product.html",
-                    product=product
-                )
-
-            # Update the product information.
-            product.name = name
-            product.category = category
-            product.price = price
-            product.stock = stock
-
-            # Save the updated information into the database.
-            db.session.commit()
-
-            # Display a success message.
-            flash("Product updated successfully.", "success")
-
-            # Redirect to the Products page.
-            return redirect(url_for("products"))
-
-
-   
-
-    # Check whether the stock is valid.
-    if stock < 0:
-
-        flash("Stock cannot be negative.", "danger")
-
-        return render_template(
-            "edit_product.html",
-            product=product
-        )
-
-    # Update the product information.
-    product.name = name
-    product.category = category
-    product.price = price
-    product.stock = stock
-
-    # Save the updated information into the database.
-    db.session.commit()
-
-    # Display a success message.
-    flash("Product updated successfully.", "success")
-
-    # Redirect to the Products page.
-    return redirect(url_for("products"))
-
-
-    # Display the Edit Product page.
-    return render_template(
-        "edit_product.html",
-        product=product
-    )
+    # Display Edit Product page
+    return render_template("edit_product.html", product=product)
 
 
 # ==========================================================
@@ -488,8 +515,25 @@ def delete_product(id):
     # Retrieve the selected product.
     product = Product.query.get_or_404(id)
 
-    # Delete the selected product.
+    # Delete product image if it exists
+    if product.image:
+
+        image_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            product.image
+        )
+
+        # Check whether the image file exists
+        if os.path.exists(image_path):
+
+            # Delete the image file
+            os.remove(image_path)
+
+    # Delete the selected product from the database
     db.session.delete(product)
+
+    # Save changes into the database
+    db.session.commit()
 
     # Save the changes into the database.
     db.session.commit()
@@ -499,6 +543,313 @@ def delete_product(id):
 
     # Redirect to the Products page.
     return redirect(url_for("products"))
+
+@app.route("/products")
+def products():
+    """
+    Display all products with search functionality.
+    """
+
+    # Check whether the administrator is logged in
+    if "admin_id" not in session:
+        flash("Please login first.", "warning")
+        return redirect(url_for("login"))
+
+    # Read search keyword from URL
+    search = request.args.get("search", "").strip()
+
+    # Check whether the user entered a search keyword
+    if search:
+
+        # Search products by name or category
+        product_list = Product.query.filter(
+            (Product.name.ilike(f"%{search}%")) |
+            (Product.category.ilike(f"%{search}%"))
+        ).order_by(Product.id.desc()).all()
+
+    else:
+
+        # Retrieve all products
+        product_list = Product.query.order_by(Product.id.desc()).all()
+
+    # Count total products
+    total_products = len(product_list)
+
+    # Display the Products page
+    return render_template(
+        "products.html",
+        products=product_list,
+        total_products=total_products,
+        search=search
+    )
+
+@app.route("/product/<int:id>")
+def product_details(id):
+    """
+    Display product details.
+    """
+
+    # Check whether the administrator is logged in
+    if "admin_id" not in session:
+        flash("Please login first.", "warning")
+        return redirect(url_for("login"))
+
+    # Get product by id
+    product = Product.query.get_or_404(id)
+
+    # Open product details page
+    return render_template(
+        "product_details.html",
+        product=product
+    )
+
+@app.route("/billing")
+def billing():
+
+    @app.route("/save-invoice", methods=["POST"])
+    def save_invoice():
+        """
+        Save invoice into the database.
+        """
+
+        # Read data from form
+        bill_number = request.form.get("bill_number")
+        customer_name = request.form.get("customer_name")
+        total_amount = request.form.get("total_amount")
+
+        # Create invoice object
+        invoice = Invoice(
+            bill_number=bill_number,
+            customer_name=customer_name,
+            total_amount=float(total_amount)
+        )
+
+        # Save invoice
+        db.session.add(invoice)
+        db.session.commit()
+
+        flash("Invoice saved successfully.", "success")
+
+        return redirect(url_for("billing"))
+    
+    @app.route("/invoice-history")
+    def invoice_history():
+        """
+        Display all saved invoices.
+        """
+
+        # Check whether admin is logged in
+        if "admin_id" not in session:
+            flash("Please login first.", "warning")
+            return redirect(url_for("login"))
+
+        # Read search value
+        search = request.args.get("search", "").strip()
+
+        # Check whether search is entered
+        if search:
+
+            invoices = Invoice.query.filter(
+                Invoice.bill_number.ilike(f"%{search}%")
+            ).order_by(
+                Invoice.created_at.desc()
+            ).all()
+
+        else:
+
+            invoices = Invoice.query.order_by(
+                Invoice.created_at.desc()
+            ).all()
+            
+
+        # Open invoice history page
+        return render_template(
+            "invoice_history.html",
+            invoices=invoices,
+            search=search
+        )
+    
+    @app.route("/delete-invoice/<int:id>")
+    def delete_invoice(id):
+        """
+        Delete selected invoice.
+        """
+
+        # Check whether admin is logged in
+        if "admin_id" not in session:
+            flash("Please login first.", "warning")
+            return redirect(url_for("login"))
+
+        # Get invoice by id
+        invoice = Invoice.query.get_or_404(id)
+
+        # Delete invoice
+        db.session.delete(invoice)
+
+        # Save changes
+        db.session.commit()
+
+        flash("Invoice deleted successfully.", "success")
+
+        return redirect(url_for("invoice_history"))
+    
+    @app.route("/invoice/<int:id>")
+    def view_invoice(id):
+        """
+        Display invoice details.
+        """
+
+        # Check whether admin is logged in
+        if "admin_id" not in session:
+            flash("Please login first.", "warning")
+            return redirect(url_for("login"))
+
+        # Get invoice by ID
+        invoice = Invoice.query.get_or_404(id)
+
+        # Open invoice details page
+        return render_template(
+            "view_invoice.html",
+            invoice=invoice
+        )
+    
+    @app.route("/invoice/pdf/<int:id>")
+    def invoice_pdf(id):
+        """
+        Download invoice as PDF.
+        """
+
+        # Check whether admin is logged in
+        if "admin_id" not in session:
+            flash("Please login first.", "warning")
+            return redirect(url_for("login"))
+
+        # Get invoice
+        invoice = Invoice.query.get_or_404(id)
+
+        return render_template(
+            "invoice_pdf.html",
+            invoice=invoice
+        )
+    
+    @app.route("/sales-report")
+    def sales_report():
+        """
+        Display Sales Report page.
+        """
+
+        # Check whether admin is logged in
+        if "admin_id" not in session:
+            flash("Please login first.", "warning")
+            return redirect(url_for("login"))
+
+        # Get all invoices
+        invoices = Invoice.query.order_by(
+            Invoice.created_at.desc()
+        ).all()
+
+        # Calculate total sales
+        total_sales = sum(
+            invoice.total_amount
+            for invoice in invoices
+        )
+
+        # Total invoices
+        total_invoices = len(invoices)
+
+        # Calculate today's sales
+        today_sales = sum(
+            invoice.total_amount
+            for invoice in invoices
+            if invoice.created_at.date() == datetime.today().date()
+        )
+
+        # Calculate this month's sales
+        current_month = datetime.today().month
+        current_year = datetime.today().year
+
+        month_sales = sum(
+            invoice.total_amount
+            for invoice in invoices
+            if invoice.created_at.month == current_month
+            and invoice.created_at.year == current_year
+        )
+
+        # Calculate this year's sales
+        year_sales = sum(
+            invoice.total_amount
+            for invoice in invoices
+            if invoice.created_at.year == current_year
+        )
+
+
+        # Open Sales Report page
+        return render_template(
+        "sales_report.html",
+        invoices=invoices,
+        total_sales=total_sales,
+        total_invoices=total_invoices,
+        today_sales=today_sales,
+        month_sales=month_sales,
+        year_sales=year_sales
+    )
+
+    @app.route("/export-sales")
+    def export_sales():
+        """
+        Export sales report as CSV.
+        """
+
+        # Check login
+        if "admin_id" not in session:
+            return redirect(url_for("login"))
+
+        # Get all invoices
+        invoices = Invoice.query.all()
+
+        # CSV header
+        csv_data = "Bill No,Customer,Total,Date\n"
+
+        # Add invoice data
+        for invoice in invoices:
+
+            csv_data += (
+                f"{invoice.bill_number},"
+                f"{invoice.customer_name},"
+                f"{invoice.total_amount},"
+                f"{invoice.created_at}\n"
+            )
+
+        # Return CSV file
+        return Response(
+            csv_data,
+            mimetype="text/csv",
+            headers={
+                "Content-Disposition":
+                "attachment; filename=sales_report.csv"
+            }
+        )
+
+
+    """
+    Display the Billing page.
+    """
+
+    # Check whether the administrator is logged in
+    if "admin_id" not in session:
+        flash("Please login first.", "warning")
+        return redirect(url_for("login"))
+
+    # Get all products
+    products = Product.query.order_by(Product.name).all()
+
+    # Open Billing page
+    return render_template(
+        "billing.html",
+        products=products
+    )
+
+
 
 # ==========================================================
 # Customer Management Module
@@ -526,6 +877,14 @@ def customers():
         "customers.html",
         customers=customer_list
     )
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """
+    Display custom 404 page.
+    """
+
+    return render_template("404.html"), 404
 
 
 # ==========================================================

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Details</title>
+</head>
+
+<body>
+
+    <h2>Product Details</h2>
+
+    <hr>
+
+    <!-- Display product image -->
+    {% if product.image %}
+
+        <img
+            src="{{ url_for('static', filename='uploads/' + product.image) }}"
+            width="200"
+            height="200"
+            alt="Product Image"
+        >
+
+    {% else %}
+
+        <p>No Image Available</p>
+
+    {% endif %}
+
+    <br><br>
+
+    <!-- Display product information -->
+    <p><strong>Product Name :</strong> {{ product.name }}</p>
+
+    <p><strong>Category :</strong> {{ product.category }}</p>
+
+    <p><strong>Price :</strong> ₹{{ product.price }}</p>
+
+    <p><strong>Stock :</strong> {{ product.stock }}</p>
+
+    <br>
+
+    <!-- Back button -->
+    <a href="/products">
+        <button>Back</button>
+    </a>
+
+</body>
+
+</html>

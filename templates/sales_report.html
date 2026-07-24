@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}
+Sales Report
+{% endblock %}
+
+{% block content %}
+
+<h2>Sales Report</h2>
+
+<!-- Print Report Button -->
+
+<button onclick="window.print()">
+
+    Print Report
+
+</button>
+
+<br><br>
+
+<br>
+
+<a href="{{ url_for('export_sales') }}">
+
+    <button>
+
+        Export CSV
+
+    </button>
+
+</a>
+
+<br><br>
+
+<br>
+
+<div>
+
+    <h3>Total Sales</h3>
+
+    <h2>₹{{ total_sales }}</h2>
+
+</div>
+
+<br>
+
+<div>
+
+    <h3>Total Invoices</h3>
+
+    <h2>{{ total_invoices }}</h2>
+
+    <br>
+
+    <div>
+
+        <h3>Today's Sales</h3>
+
+        <h2>₹{{ today_sales }}</h2>
+
+    </div>
+
+    <br>
+
+    <div>
+
+        <h3>This Month Sales</h3>
+
+        <h2>₹{{ month_sales }}</h2>
+
+    </div>
+
+    <br>
+
+    <div>
+
+        <h3>This Year Sales</h3>
+
+        <h2>₹{{ year_sales }}</h2>
+
+    </div>
+
+</div>
+
+
+<br>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Bill No</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Date</th>
+    </tr>
+
+    {% for invoice in invoices %}
+
+    <tr>
+
+        <td>{{ invoice.bill_number }}</td>
+
+        <td>{{ invoice.customer_name }}</td>
+
+        <td>₹{{ invoice.total_amount }}</td>
+
+        <td>{{ invoice.created_at }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<!-- Sales Chart -->
+
+<br>
+
+<h3>Sales Summary</h3>
+
+<canvas id="salesChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById("salesChart");
+
+new Chart(ctx, {
+    type: "bar",
+    data: {
+        labels: ["Today", "This Month", "This Year"],
+        datasets: [{
+            label: "Sales",
+            data: [
+                {{ today_sales }},
+                {{ month_sales }},
+                {{ year_sales }}
+            ]
+        }]
+    }
+});
+</script>
+
+<style>
+
+@media print {
+
+    button {
+
+        display: none;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -41,10 +41,59 @@
 
         <div>
 
-            <a href="/dashboard">
-                <i class="fa-solid fa-house"></i>
-                Dashboard
-            </a>
+            <a href="/dashboard"
+                class="{% if request.endpoint == 'dashboard' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+            
+            <a href="/sales-report"
+                class="{% if request.endpoint == 'sales_report' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Sales Report
+
+                </a>
+
+            <a href="/invoice-history"
+                class="{% if request.endpoint == 'invoice_history' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    Invoice History
+
+                </a>
+
+            <a href="/billing"
+                class="{% if request.endpoint == 'billing' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    Billing
+
+                </a>
+
+            <a href="/products"
+                class="{% if request.endpoint == 'products' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-box"></i>
+
+                    Products
+
+                </a>
+
+            <a href="/customers"
+                class="{% if request.endpoint == 'customers' %}active-menu{% endif %}">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Customers
+
+                </a>
 
             <a href="/logout">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -91,6 +140,18 @@
 
     {% block scripts %}
     {% endblock %}
+
+    <!-- Footer -->
+
+<footer class="footer">
+
+    <p>
+
+        © 2026 Super Mart Management System | Developed by Vedant
+
+    </p>
+
+</footer>
 
 </body>
 

@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}
+Billing
+{% endblock %}
+
+{% block content %}
+
+<h2>Billing</h2>
+
+<!-- Bill Date and Time -->
+
+<p>
+
+    <strong>Date & Time :</strong>
+
+    <span id="billDateTime"></span>
+
+</p>
+
+<!-- Bill Number -->
+
+<p>
+
+    <strong>Bill No :</strong>
+
+    <span id="billNumber"></span>
+
+</p>
+
+<!-- Customer Name -->
+
+<p>
+
+    <strong>Customer Name :</strong>
+
+    <input
+        type="text"
+        id="customerName"
+        placeholder="Enter Customer Name"
+    >
+
+</p>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Quantity</th>
+        <!-- Action Column -->
+        <th>Action</th>
+
+    </tr>
+
+    {% for product in products %}
+
+    <tr>
+        <td>{{ product.name }}</td>
+        <td>₹{{ product.price }}</td>
+        <td>{{ product.stock }}</td>
+        <!-- Product Quantity -->
+        <td>
+
+            <input
+                type="number"
+                id="qty{{ product.id }}"
+                min="1"
+                max="{{ product.stock }}"
+                value="1"
+                style="width:70px;"
+            >
+
+        </td>
+
+        <!-- Add To Cart Button -->
+        <td>
+
+            <button
+                type="button"
+                onclick="addToCart(
+                    '{{ product.name }}',
+                    {{ product.price }},
+                    {{ product.id }}
+                )"
+            >
+                Add to Cart
+            </button>
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<br>
+<hr>
+
+<h2>Shopping Cart</h2>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+
+        <th>Product</th>
+
+        <th>Quantity</th>
+
+        <th>Price</th>
+
+        <th>Total</th>
+
+        <!-- Remove Column -->
+        <th>Action</th>
+
+    </tr>
+
+    <tbody id="cartTable">
+
+        <!-- Cart items will be displayed here -->
+
+    </tbody>
+
+</table>
+
+<br>
+
+<h3>
+
+Grand Total :
+₹<span id="grandTotal">0</span>
+
+</h3>
+
+<br>
+
+<form action="{{ url_for('save_invoice') }}" method="POST">
+
+    <input
+        type="hidden"
+        id="bill_number"
+        name="bill_number"
+    >
+
+    <input
+        type="hidden"
+        id="total_amount"
+        name="total_amount"
+    >
+
+    <input
+        type="hidden"
+        id="customer_name_hidden"
+        name="customer_name"
+    >
+
+    <button type="submit" onclick="generateBill()">
+        Generate Bill
+    </button>
+
+</form>
+
+<button onclick="printBill()">
+
+    Print Bill
+
+</button>
+
+<script>
+
+function addToCart(name, price, id)
+{
+    // Read selected quantity
+    let quantity = document.getElementById("qty" + id).value;
+
+    // Calculate total amount
+    let total = quantity * price;
+
+    // Get cart table
+    let table = document.getElementById("cartTable");
+
+    // Read current grand total
+    let grandTotal = document.getElementById("grandTotal");
+
+    // Calculate new grand total
+    let currentTotal = Number(grandTotal.innerHTML);
+
+    currentTotal += total;
+
+    // Update grand total
+    grandTotal.innerHTML = currentTotal;
+
+    // Add new row into cart
+    table.innerHTML += `
+    <tr>
+
+        <td>${name}</td>
+
+        <td>${quantity}</td>
+
+        <td>₹${price}</td>
+
+        <td>₹${total}</td>
+
+        <td>
+
+            <button onclick="removeItem(this, ${total})">
+
+                Remove
+
+            </button>
+
+        </td>
+
+    </tr>
+    `;
+}
+
+function removeItem(button, amount)
+{
+    // Remove selected row
+    button.parentElement.parentElement.remove();
+
+    // Update grand total
+    let grandTotal = document.getElementById("grandTotal");
+
+    let currentTotal = Number(grandTotal.innerHTML);
+
+    grandTotal.innerHTML = currentTotal - amount;
+}
+
+function generateBill()
+{
+    // Display bill generated message
+    alert("Bill Generated Successfully.");
+}
+
+function generateBill()
+{
+    // Read customer name
+    let customer = document.getElementById("customerName").value;
+
+    // Check whether customer name is entered
+    if (customer == "")
+    {
+        alert("Please enter customer name.");
+        return;
+    }
+
+    // Copy values into hidden fields
+    document.getElementById("bill_number").value =
+        document.getElementById("billNumber").innerHTML;
+
+    document.getElementById("total_amount").value =
+        document.getElementById("grandTotal").innerHTML;
+
+    document.getElementById("customer_name_hidden").value =
+        customer;
+        
+}
+
+// Display current date and time
+function showDateTime()
+{
+    // Create current date object
+    let now = new Date();
+
+    // Display date and time
+    document.getElementById("billDateTime").innerHTML =
+        now.toLocaleString();
+}
+
+// Call function when page loads
+showDateTime();
+
+// Generate bill number automatically
+function generateBillNumber()
+{
+    // Create unique bill number using current time
+    let billNo = "INV" + Date.now();
+
+    // Display bill number
+    document.getElementById("billNumber").innerHTML = billNo;
+}
+
+// Generate bill number when page loads
+generateBillNumber();
+
+
+</script>
+
+{% endblock %}
